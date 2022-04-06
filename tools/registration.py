@@ -102,7 +102,46 @@ def register_images_with_nccshift(reference_image, moving_image, scale=False, pi
     # print('registration_transform (despues)', registration_transform)
 
     return registered_image, registration_transform
+
+def register_images_height(reference_image, moving_image, mask_image,
+                                  adjust_dz_method = 'nanmedian'):
+    # ref & mov are the images to be registered
+    # reference_image & moving_image are the original images (eventually of different sizes)
+    ref = reference_image.copy()
+    mov = moving_image.copy()
+
+    #adjust sizes for the original and operative images
+    rows = max(ref.shape[0], mov.shape[0])
+    cols = max(ref.shape[1], mov.shape[1])
+    # create the big images initialized with NaN
+#     ref_resized = np.ones((rows,cols))*np.nan
+#     mov_resized = np.ones((rows,cols))*np.nan
+    reference_image_resized = np.ones((rows, cols)) * np.nan
+    moving_image_resized = np.ones((rows, cols)) * np.nan
+    mask_image_resized = np.ones((rows, cols)) * np.nan
     
+
+#     ref_resized[:ref.shape[0],:ref.shape[1]] = ref
+#     mov_resized[:mov.shape[0],:mov.shape[1]] = mov
+    reference_image_resized[:ref.shape[0],:ref.shape[1]] = reference_image
+    moving_image_resized[:mov.shape[0],:mov.shape[1]] = moving_image
+    mask_image_resized[:mask_image.shape[0],:mask_image.shape[1]] = mask_image
+    
+    moving_image_resized *= mask_image_resized
+    
+    if adjust_dz_method=='nanmean':
+        dz = np.nanmean(reference_image_resized - moving_image_resized)
+        mov = mov + dz
+    elif adjust_dz_method=='nanmedian':
+        dz = np.nanmedian(reference_image_resized - moving_image_resized)
+        mov = mov + dz
+    else:
+        raise ValueError('Wrong method, accepted: nanmedian and nanmean')
+    
+    return mov, dz
+                         
+                         
+                    
     
 def compute_nccshift_registration(reference_image_filename, moving_image_filename, registered_image_filename, registration_result_filename, scale=False, pixel_range=9 ):
     REGISTRATION_EXE = '/home/agomez/ownCloud/Documents/doctorado/satelite/registrado/nccshift/nccshift'
@@ -188,6 +227,16 @@ def compute_bdint_interpolation(image_filename, interpolated_image_filename, min
     print('Running: ', command)
     subprocess.call('pwd', shell=True)
     subprocess.call(command, shell=True)
+
+
+#------------------------------------------------------------------------
+# Phase cross correlation (scikit image)
+# https://scikit-image.org/docs/stable/api/skimage.registration.html#skimage.registration.phase_cross_correlation
+# https://scikit-image.org/docs/stable/auto_examples/registration/plot_masked_register_translation.html#sphx-glr-auto-examples-registration-plot-masked-register-translation-py
+#------------------------------------------------------------------------
+
+
+
 
 
 #------------------------------------------------------------------------

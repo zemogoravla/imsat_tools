@@ -443,7 +443,7 @@ def simple_equalization_8bit(im, percentiles=5):
         percentiles (int): percentage of the darkest and brightest pixels to saturate
 
     Returns:
-        numpy array with the quantized uint8 image
+        numpy array with the quantized uint8 imageº
     """
     import numpy as np
     mi, ma = np.percentile(im[np.isfinite(im)], (percentiles, 100 - percentiles))

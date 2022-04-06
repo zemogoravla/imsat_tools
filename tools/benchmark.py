@@ -108,7 +108,7 @@ def compute_benchmark(reference_image, test_image, mask_image, z_tolerance=1, sh
             filename = save_figures_filename_prefix + '_altitude_diff_wrt_gt.tif'
             imsave(filename, diff_image.astype(np.float32))
         
-        '''
+
         fig = plt.figure(figsize=[6.4,4.8], dpi=100)
         plt.imshow(diff_image, cmap='bwr', vmin=-10, vmax=10)
         plt.title('Altitude diff w.r.t GT')
@@ -155,7 +155,7 @@ def compute_benchmark(reference_image, test_image, mask_image, z_tolerance=1, sh
         
         if show_figures:
             plt.show()
-        '''
+
     return evaluated, bad, invalid, totalbad, completeness, accuracy, meanAbsErr, medianAbsErr
 
 
